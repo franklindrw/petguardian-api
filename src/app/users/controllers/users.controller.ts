@@ -11,7 +11,6 @@ import { ApiResponse, ApiTags } from '@nestjs/swagger';
 
 interface CreateUserResp {
   message: string;
-  user: CreateUserDto;
 }
 
 @ApiTags('users') // adicionando a tag users para o swagger
@@ -23,8 +22,8 @@ export class UsersController {
   @ApiResponse({ status: 201, description: 'Usuário criado com sucesso' })
   async createUser(@Body() postData: CreateUserDto): Promise<CreateUserResp> {
     try {
-      const newUser = await this.usersService.createUser(postData);
-      return { message: 'Usuário criado com sucesso', user: newUser };
+      await this.usersService.createUser(postData);
+      return { message: 'Usuário criado com sucesso' };
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
