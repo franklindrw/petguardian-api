@@ -20,7 +20,7 @@ async function bootstrap() {
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('/', app, document);
+  SwaggerModule.setup('/docs', app, document);
 
   app.useGlobalPipes(new ValidationPipe()); // adicionando o pipe de validação globalmente
   await app.listen(process.env.PORT || 3000);
