@@ -3,6 +3,7 @@ import * as dotenv from 'dotenv';
 import { initializeFirebase } from './infra/database/firebase.config';
 import { UsersModule } from './app/users/users.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   dotenv.config();
@@ -21,6 +22,7 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
 
+  app.useGlobalPipes(new ValidationPipe()); // adicionando o pipe de validação globalmente
   await app.listen(process.env.PORT || 3000);
 }
 bootstrap();
