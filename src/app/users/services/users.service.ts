@@ -33,4 +33,12 @@ export class UsersService {
     // se não houverem erros, cria o usuário
     return this.usersRepository.createUser(createUserDto);
   }
+
+  async findByEmail(email: string): Promise<CreateUserDto> {
+    const user = await this.usersRepository.findByEmail(email);
+    if (!user) {
+      throw new HttpException('Usuário não encontrado', HttpStatus.NOT_FOUND);
+    }
+    return user;
+  }
 }

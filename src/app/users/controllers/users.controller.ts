@@ -1,13 +1,16 @@
 import {
   Body,
   Controller,
+  Get,
   HttpException,
   HttpStatus,
   Post,
+  UseGuards,
 } from '@nestjs/common';
 import { UsersService } from '../services/users.service';
 import { CreateUserDto } from '../dto/create-user.dto';
-import { ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { JwtAuthGuard } from 'src/app/auth/auth.guard';
 
 interface CreateUserResp {
   message: string;
@@ -27,5 +30,14 @@ export class UsersController {
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
+  }
+
+  @Get()
+  @ApiBearerAuth()
+  @ApiResponse({ status: 200, description: 'lista de usuários' })
+  @ApiResponse({ status: 403, description: 'Usuário não autenticado' })
+  @UseGuards(JwtAuthGuard)
+  async getUsers(): Promise<any> {
+    return 'Hello World!';
   }
 }
