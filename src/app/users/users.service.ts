@@ -20,6 +20,15 @@ export class UsersService {
       throw new HttpException(errorMessage, HttpStatus.UNPROCESSABLE_ENTITY);
     }
 
+    // valida se o email já está cadastrado
+    const user = await this.usersRepository.findByEmail(createUserDto.email);
+    if (user) {
+      throw new HttpException(
+        'Já existe um usuário cadastrado com esse email',
+        HttpStatus.CONFLICT,
+      );
+    }
+
     // convertendo a data de nascimento para o formato do Firestore
     const birthDate = new Date(createUserDto.birthDate);
 
