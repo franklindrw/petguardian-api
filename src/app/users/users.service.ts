@@ -3,6 +3,7 @@ import { UsersRepository } from './users.repository';
 import { CreateUserDto } from './create-user.dto';
 import { ValidationError, validate } from 'class-validator';
 import { hashPassword } from '../../infra/utils/bcrypt.util';
+import { UsersDto } from './users.dto';
 
 @Injectable()
 export class UsersService {
@@ -43,8 +44,30 @@ export class UsersService {
     return this.usersRepository.createUser(createUserDto);
   }
 
+  // retorna um usuário pelo id
   async findByEmail(email: string): Promise<CreateUserDto> {
     const user = await this.usersRepository.findByEmail(email);
+    if (!user) {
+      throw new HttpException('Usuário não encontrado', HttpStatus.NOT_FOUND);
+    }
+    return user;
+  }
+
+  // retorna todos os usuários cadastrados
+  async getAllUsers(): Promise<UsersDto[]> {
+    const users = await this.usersRepository.getAllUsers();
+    if (!users) {
+      throw new HttpException(
+        'Nenhum usuário encontrado',
+        HttpStatus.NOT_FOUND,
+      );
+    }
+    return users;
+  }
+
+  // retorna o usuário pelo id
+  async getUserById(id: string): Promise<UsersDto> {
+    const user = await this.usersRepository.getUserById(id);
     if (!user) {
       throw new HttpException('Usuário não encontrado', HttpStatus.NOT_FOUND);
     }
