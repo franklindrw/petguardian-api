@@ -1,8 +1,8 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { UsersRepository } from '../repositories/users.repository';
-import { CreateUserDto } from '../dto/create-user.dto';
+import { UsersRepository } from './users.repository';
+import { CreateUserDto } from './create-user.dto';
 import { ValidationError, validate } from 'class-validator';
-import { hashPassword } from '../../../infra/utils/bcrypt.util';
+import { hashPassword } from '../../infra/utils/bcrypt.util';
 
 @Injectable()
 export class UsersService {

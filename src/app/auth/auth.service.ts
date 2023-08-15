@@ -1,5 +1,5 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { UsersService } from '../users/services/users.service';
+import { UsersService } from '../users/users.service';
 import { comparePasswords } from '../../infra/utils/bcrypt.util';
 import * as jwt from 'jsonwebtoken';
 

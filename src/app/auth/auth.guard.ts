@@ -17,7 +17,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
     }
 
     try {
-      const decoded = jwt.verify(token, SECRET_TOKEN);
+      const decoded = jwt.verify(token, SECRET_TOKEN); // verifica se o token é válido e dentro do prazo de validade
       request.user = decoded; // Define o usuário decodificado no objeto de solicitação
       return true;
     } catch (error) {
