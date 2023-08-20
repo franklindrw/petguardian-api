@@ -5,6 +5,7 @@ import {
   HttpException,
   HttpStatus,
   Param,
+  Request,
   Post,
   Put,
   Query,
@@ -23,22 +24,26 @@ import { CreateUserDto } from './create-user.dto';
 import { UsersService } from './users.service';
 import { JwtAuthGuard } from 'src/app/auth/auth.guard';
 import { UpdateUserDto } from './update-user.dto';
+import { AuthService } from '../auth/auth.service';
 
-interface CreateUserResp {
+interface messageResp {
   message: string;
 }
 
 @ApiTags('users') // adicionando a tag users para o swagger
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(
+    private readonly usersService: UsersService,
+    private readonly authService: AuthService,
+  ) {}
 
   @Post()
   @ApiResponse({
     status: 201,
     description: 'Usuário criado com sucesso',
   })
-  async createUser(@Body() postData: CreateUserDto): Promise<CreateUserResp> {
+  async createUser(@Body() postData: CreateUserDto): Promise<messageResp> {
     try {
       await this.usersService.createUser(postData);
       return { message: 'Usuário criado com sucesso' };
@@ -93,13 +98,32 @@ export class UsersController {
   @UseGuards(JwtAuthGuard)
   @ApiParam({ name: 'id', type: 'string' })
   @ApiBody({ type: UpdateUserDto })
+  @ApiResponse({ status: 403, description: 'Usuário não autenticado' })
+  @ApiResponse({ status: 404, description: 'Não há usuários cadastrados' })
+  @ApiResponse({
+    status: 200,
+    description: 'Usuário atualizado com sucesso',
+  })
   async updateUser(
     @Param('id') id: string,
     @Body() updateUserData: UpdateUserDto,
-  ): Promise<string> {
+    @Request() req: any,
+  ): Promise<messageResp> {
+    // captura o token de autorização
+    const token = req.headers.authorization.split(' ')[1];
+    const decodedToken = await this.authService.decodeToken(token);
+
+    // verifica se o id do usuário logado é igual ao id do usuário que está sendo atualizado
+    if (decodedToken.userId !== id) {
+      throw new HttpException(
+        'Você não tem permissão para atualizar este usuário',
+        HttpStatus.UNAUTHORIZED,
+      );
+    }
+
     try {
       await this.usersService.updateUser(id, updateUserData);
-      return 'Usuário atualizado com sucesso';
+      return { message: 'Usuário atualizado com sucesso' };
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }

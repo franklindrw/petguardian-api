@@ -51,4 +51,9 @@ export class AuthService {
 
     throw new HttpException('Credenciais inválidas', HttpStatus.UNAUTHORIZED);
   }
+
+  async decodeToken(token: string): Promise<userDataProps> {
+    const PRIVATE_KEY = process.env.JWT_SECRET;
+    return jwt.verify(token, PRIVATE_KEY) as userDataProps;
+  }
 }
