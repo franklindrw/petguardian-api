@@ -4,6 +4,7 @@ import { CreateUserDto } from './create-user.dto';
 import { ValidationError, validate } from 'class-validator';
 import { hashPassword } from '../../infra/utils/bcrypt.util';
 import { UsersDto } from './users.dto';
+import { UpdateUserDto } from './update-user.dto';
 
 @Injectable()
 export class UsersService {
@@ -72,5 +73,66 @@ export class UsersService {
       throw new HttpException('Usuário não encontrado', HttpStatus.NOT_FOUND);
     }
     return user;
+  }
+
+  // retorna o usuário pelo email
+  async getUserByEmail(email: string): Promise<UsersDto> {
+    const user = await this.usersRepository.getUserByEmail(email);
+    if (!user) {
+      throw new HttpException('Usuário não encontrado', HttpStatus.NOT_FOUND);
+    }
+    return user;
+  }
+
+  // atualiza o usuário
+  async updateUser(userId: string, userData: UpdateUserDto): Promise<string> {
+    const user = await this.usersRepository.getUserById(userId);
+
+    if (!user) {
+      throw new HttpException('Usuário não encontrado', HttpStatus.NOT_FOUND);
+    }
+
+    console.log(user);
+    console.log(userData);
+
+    // validando o DTO antes de criar o usuário
+    const errors: ValidationError[] = await validate(userData);
+
+    // se houverem erros, retorna um array com os erros
+    if (errors.length > 0) {
+      const errorMessage = errors
+        .map((error) => Object.values(error.constraints).join('; '))
+        .join('; ');
+      throw new HttpException(errorMessage, HttpStatus.UNPROCESSABLE_ENTITY);
+    }
+
+    // cria um objeto com os dados do usuário
+    if (userData.name) {
+      user.name = userData.name;
+    }
+    if (userData.birthDate) {
+      // convertendo a data de nascimento para o formato do Firestore
+      const birthDate = new Date(userData.birthDate);
+
+      // adicionando mais 3 horas para compensar o fuso horário
+      birthDate.setHours(birthDate.getHours() + 3);
+      user.birthDate = birthDate;
+    }
+    if (userData.cpf) {
+      user.cpf = userData.cpf;
+    }
+    if (userData.phoneNumber1) {
+      user.phoneNumber1 = userData.phoneNumber1;
+    }
+    if (userData.phoneNumber2) {
+      user.phoneNumber2 = userData.phoneNumber2;
+    }
+    if (userData.password) {
+      user.password = await hashPassword(userData.password);
+    }
+
+    // atualiza o usuário
+    await this.usersRepository.updateUser(userId, user);
+    return 'Usuário atualizado com sucesso';
   }
 }

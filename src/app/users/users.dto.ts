@@ -1,3 +1,4 @@
+import { ApiHideProperty } from '@nestjs/swagger';
 import { IsDate, IsEmail, IsNumberString, IsString } from 'class-validator';
 
 export class UsersDto {
@@ -48,4 +49,11 @@ export class UsersDto {
    */
   @IsNumberString()
   phoneNumber2: string;
+
+  /**
+   * Senha do usuário
+   */
+  @ApiHideProperty()
+  @IsString()
+  password?: string;
 }
