@@ -90,6 +90,7 @@ export class UsersController {
 
   @Put(':id')
   @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
   @ApiParam({ name: 'id', type: 'string' })
   @ApiBody({ type: UpdateUserDto })
   async updateUser(

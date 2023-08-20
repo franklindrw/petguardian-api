@@ -92,9 +92,6 @@ export class UsersService {
       throw new HttpException('Usuário não encontrado', HttpStatus.NOT_FOUND);
     }
 
-    console.log(user);
-    console.log(userData);
-
     // validando o DTO antes de criar o usuário
     const errors: ValidationError[] = await validate(userData);
 
@@ -130,6 +127,9 @@ export class UsersService {
     if (userData.password) {
       user.password = await hashPassword(userData.password);
     }
+
+    // remove o id do objeto
+    delete user.userId;
 
     // atualiza o usuário
     await this.usersRepository.updateUser(userId, user);
