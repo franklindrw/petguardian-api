@@ -97,4 +97,8 @@ export class UsersRepository {
 
     await this.firestore.collection('users').doc(userId).update(updateData);
   }
+
+  async deleteUser(userId: string): Promise<void> {
+    await this.firestore.collection('users').doc(userId).delete();
+  }
 }

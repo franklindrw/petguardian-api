@@ -10,6 +10,7 @@ import {
   Put,
   Query,
   UseGuards,
+  Delete,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -124,6 +125,40 @@ export class UsersController {
     try {
       await this.usersService.updateUser(id, updateUserData);
       return { message: 'Usuário atualizado com sucesso' };
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  @Delete(':id')
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @ApiParam({ name: 'id', type: 'string' })
+  @ApiResponse({ status: 403, description: 'Usuário não autenticado' })
+  @ApiResponse({ status: 404, description: 'Não há usuários cadastrados' })
+  @ApiResponse({
+    status: 200,
+    description: 'Usuário deletado com sucesso',
+  })
+  async deleteUser(
+    @Param('id') id: string,
+    @Request() req: any,
+  ): Promise<messageResp> {
+    // captura o token de autorização
+    const token = req.headers.authorization.split(' ')[1];
+    const decodedToken = await this.authService.decodeToken(token);
+
+    // verifica se o id do usuário logado é igual ao id do usuário que está sendo atualizado
+    if (decodedToken.userId !== id) {
+      throw new HttpException(
+        'Você não tem permissão para deletar este usuário',
+        HttpStatus.UNAUTHORIZED,
+      );
+    }
+
+    try {
+      await this.usersService.deleteUser(id);
+      return { message: 'Usuário deletado com sucesso' };
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }

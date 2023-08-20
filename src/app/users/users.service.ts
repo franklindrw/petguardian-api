@@ -135,4 +135,16 @@ export class UsersService {
     await this.usersRepository.updateUser(userId, user);
     return 'Usuário atualizado com sucesso';
   }
+
+  // deleta o usuário
+  async deleteUser(userId: string): Promise<string> {
+    const user = await this.usersRepository.getUserById(userId);
+
+    if (!user) {
+      throw new HttpException('Usuário não encontrado', HttpStatus.NOT_FOUND);
+    }
+
+    await this.usersRepository.deleteUser(userId);
+    return 'Usuário deletado com sucesso';
+  }
 }
