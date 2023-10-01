@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { PetsController } from '@app/pets/pets.controller';
 import { PetsService } from '@app/pets/pets.service';
+import { CreatePetDto } from '@app/pets/dtos/create-pet.dto';
 
 describe('PetsController', () => {
   let controller: PetsController;
@@ -20,9 +21,9 @@ describe('PetsController', () => {
     expect(controller).toBeDefined();
   });
 
-  // testa o método createPet
+  // testa o método createPet com dados válidos
   it('should create a pet', async () => {
-    const newPetData = {
+    const newPetData: CreatePetDto = {
       name: 'Frank',
       age: 2,
       breed: 'Buldogue',
