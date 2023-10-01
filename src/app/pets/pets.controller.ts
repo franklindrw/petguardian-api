@@ -1,4 +1,11 @@
-import { Controller, UseGuards, Post, Body } from '@nestjs/common';
+import {
+  Controller,
+  UseGuards,
+  Post,
+  Body,
+  HttpException,
+  HttpStatus,
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiBody, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '@app/auth/auth.guard';
 import { PetsService } from './pets.service';
@@ -19,6 +26,11 @@ export class PetsController {
   })
   @ApiResponse({ status: 403, description: 'Usuário não autenticado' })
   async createPet(@Body() newPetData: CreatePetDto): Promise<any> {
-    return { message: 'Pet criado com sucesso', data: newPetData };
+    try {
+      await this.petsService.createPet(newPetData);
+      return { message: 'Pet criado com sucesso' };
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
   }
 }
