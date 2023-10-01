@@ -4,7 +4,7 @@
   "description": "API REST para o projeto de tcc petguardian, feito com node e NestJS",
   "author": "Franklin Campos",
   "private": true,
-  "license": "UNLICENSED",
+  "license": "Apache-2.0 license",
   "scripts": {
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
@@ -58,6 +58,7 @@
     "ts-loader": "^9.2.3",
     "ts-node": "^10.0.0",
     "tsconfig-paths": "4.2.0",
+    "tsconfig-paths-jest": "^0.0.1",
     "typescript": "^5.0.0"
   },
   "jest": {
@@ -75,6 +76,12 @@
       "**/*.(t|j)s"
     ],
     "coverageDirectory": "../coverage",
-    "testEnvironment": "node"
+    "testEnvironment": "node",
+    "moduleNameMapper": {
+      "^@/(.*)$": "<rootDir>/$1",
+      "^@app/(.*)$": "<rootDir>/app/$1",
+      "^@infra/(.*)$": "<rootDir>/infra/$1",
+      "^@decorators/(.*)$": "<rootDir>/decorators/$1"
+    }
   }
 }
