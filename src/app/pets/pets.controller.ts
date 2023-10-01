@@ -1,6 +1,6 @@
 import { Controller, UseGuards, Post, Body } from '@nestjs/common';
 import { ApiBearerAuth, ApiBody, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { JwtAuthGuard } from '../auth/auth.guard';
+import { JwtAuthGuard } from '@app/auth/auth.guard';
 import { PetsService } from './pets.service';
 import { CreatePetDto } from './dtos/create-pet.dto';
 

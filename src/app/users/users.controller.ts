@@ -25,7 +25,7 @@ import { CreateUserDto } from './create-user.dto';
 import { UsersService } from './users.service';
 import { JwtAuthGuard } from 'src/app/auth/auth.guard';
 import { UpdateUserDto } from './update-user.dto';
-import { AuthService } from '../auth/auth.service';
+import { AuthService } from '@app/auth/auth.service';
 
 interface messageResp {
   message: string;

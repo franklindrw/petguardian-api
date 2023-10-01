@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { PetsController } from '../pets.controller';
-import { PetsService } from '../pets.service';
+import { PetsController } from '@app/pets/pets.controller';
+import { PetsService } from '@app/pets/pets.service';
 
 describe('PetsController', () => {
   let controller: PetsController;
@@ -23,13 +23,20 @@ describe('PetsController', () => {
   // testa o método createPet
   it('should create a pet', async () => {
     const newPetData = {
-      name: 'Rex',
-      age: 10,
-      breed: 'Poodle',
+      name: 'Frank',
+      age: 2,
+      breed: 'Buldogue',
+      category: 'cão',
+      qualities: ['Calmo', 'Brincalhão'],
+      cep: '12345-678',
+      userId: 'yh3y4r79q2ty-7r8yhq1',
     };
     const response = await controller.createPet(newPetData);
 
     expect(response).toBeDefined();
-    expect(response).toEqual({ message: 'Pet criado com sucesso' });
+    expect(response).toEqual({
+      message: 'Pet criado com sucesso',
+      data: newPetData,
+    });
   });
 });

@@ -1,8 +1,8 @@
 import { IsArray, IsNumber, IsOptional, IsString } from 'class-validator';
-import { IsCategory } from '../../../decorators/isCategory.decorator';
-import { IsQualities } from '../../../decorators/isQualities.decorator';
-import { IsAnimalSize } from '../../../decorators/isAnimalSize.decorator';
-import { IsCep } from 'src/decorators/isCep.decorator';
+import { IsCategory } from '@decorators/isCategory.decorator';
+import { IsQualities } from '@decorators/isQualities.decorator';
+import { IsAnimalSize } from '@decorators/isAnimalSize.decorator';
+import { IsCep } from '@decorators/isCep.decorator';
 
 export class CreatePetDto {
   /**
