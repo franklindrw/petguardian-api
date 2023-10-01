@@ -33,7 +33,7 @@ export class LoggerMiddleware implements NestMiddleware {
       transports: [
         new winston.transports.Console(),
         new winston.transports.File({ filename: 'error.log', level: 'error' }),
-        new winston.transports.File({ filename: 'combined.log' }),
+        // Remova esta linha para não criar o arquivo de log combinado
       ],
     });
   }
@@ -88,6 +88,6 @@ export class LoggerMiddleware implements NestMiddleware {
       }
     });
 
-    next(); // Chame next() uma vez após o evento 'finish'
+    next();
   }
 }
