@@ -7,6 +7,14 @@ import { PetsRepository } from './pets.repository';
 export class PetsService {
   constructor(private readonly petsRepository: PetsRepository) {}
 
+  async getAllPets(): Promise<any> {
+    const pets = await this.petsRepository.getAllPets();
+    if (!pets) {
+      throw new HttpException('Não há pets cadastrados', HttpStatus.NOT_FOUND);
+    }
+    return pets;
+  }
+
   async createPet(createPetDto: CreatePetDto): Promise<any> {
     // valida o DTO antes de criar o pet
     const errors: ValidationError[] = await validate(createPetDto);
