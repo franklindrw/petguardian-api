@@ -2,6 +2,7 @@ import * as admin from 'firebase-admin';
 import { Injectable } from '@nestjs/common';
 import { CreatePetDto } from './dtos/create-pet.dto';
 import { PetDto } from './dtos/pet.dto';
+import { UpdatePetDto } from './dtos/update-pet.dto';
 
 @Injectable()
 export class PetsRepository {
@@ -16,27 +17,43 @@ export class PetsRepository {
     const pets = [];
     petsSnapshot.forEach((pet) => {
       const petData = pet.data();
-      pets.push({
-        id: pet.id,
-        name: petData.name,
-        age: petData.age,
-        breed: petData.breed,
-        category: petData.category,
-        qualities: petData.qualities,
-        animalSize: petData.animalSize,
-        description: petData.description,
-        photoUrl: petData.photoUrl,
-        cep: petData.cep,
-        userId: petData.userId,
-      } as PetDto);
+      petData.id = pet.id;
+      pets.push(petData as PetDto);
     });
 
     return pets;
+  }
+
+  async getPetById(petID: string): Promise<PetDto> {
+    const petSnapshot = await this.firestore
+      .collection('pets')
+      .doc(petID)
+      .get();
+    const petData = petSnapshot.data();
+    petData.id = petSnapshot.id;
+    return petData as PetDto;
   }
 
   async createPet(createPetDto: CreatePetDto): Promise<CreatePetDto> {
     const newPetRef = await this.firestore.collection('pets').add(createPetDto);
     const newPet = await newPetRef.get();
     return { ...newPet.data() } as CreatePetDto;
+  }
+
+  async updatePet(petID: string, updatePetDto: UpdatePetDto): Promise<any> {
+    const petData = { ...updatePetDto };
+
+    // remove os campos vazios
+    Object.keys(petData).forEach(
+      (key) => petData[key] == null && delete petData[key],
+    );
+
+    const petRef = this.firestore.collection('pets').doc(petID);
+    await petRef.update(petData);
+  }
+
+  async deletePet(petID: string): Promise<any> {
+    const petRef = this.firestore.collection('pets').doc(petID);
+    await petRef.delete();
   }
 }
