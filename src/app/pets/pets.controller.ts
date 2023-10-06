@@ -41,11 +41,19 @@ export class PetsController {
   @ApiResponse({ status: 403, description: 'Usuário não autenticado' })
   @ApiResponse({ status: 404, description: 'Não há usuários cadastrados' })
   @ApiQuery({ name: 'petID', required: false })
-  async getPets(@Query('petID') petID?: string): Promise<PetDto[]> {
+  @ApiQuery({ name: 'userID', required: false })
+  async getPets(
+    @Query('petID') petID?: string,
+    @Query('userID') userID?: string,
+  ): Promise<any> {
     try {
       if (petID) {
         const pet = await this.petsService.getPetById(petID);
         return [pet];
+      }
+      if (userID) {
+        const pets = await this.petsService.getPetsByUserId(userID);
+        return pets;
       }
       const pets = await this.petsService.getAllPets();
       return pets;

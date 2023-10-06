@@ -1,9 +1,8 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreatePetDto } from './dtos/create-pet.dto';
 import { ValidationError, validate } from 'class-validator';
-import { PetsRepository } from './pets.repository';
+import { PetIdProps, PetsRepository } from './pets.repository';
 import { UpdatePetDto } from './dtos/update-pet.dto';
-import { PetDto } from './dtos/pet.dto';
 
 @Injectable()
 export class PetsService {
@@ -17,12 +16,20 @@ export class PetsService {
     return pets;
   }
 
-  async getPetById(petID: string): Promise<PetDto> {
+  async getPetById(petID: string): Promise<PetIdProps> {
     const pet = await this.petsRepository.getPetById(petID);
     if (!pet) {
       throw new HttpException('Pet não encontrado', HttpStatus.NOT_FOUND);
     }
     return pet;
+  }
+
+  async getPetsByUserId(userID: string): Promise<any> {
+    const pets = await this.petsRepository.getPetsByUserId(userID);
+    if (!pets) {
+      throw new HttpException('Não há pets cadastrados', HttpStatus.NOT_FOUND);
+    }
+    return pets;
   }
 
   async createPet(createPetDto: CreatePetDto): Promise<any> {
