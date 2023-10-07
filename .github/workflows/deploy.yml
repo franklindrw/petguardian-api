@@ -1,0 +1,46 @@
+name: Deploy-Nest-PM2
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    name: Clone project to EC2
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout the files
+        uses: actions/checkout@v3
+
+      - name: Copy files with SSH
+        uses: easingthemes/ssh-deploy@main
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          ARGS: "-rltgoDzvO --delete"
+          SOURCE: "./"
+          REMOTE_HOST: "ec2-52-54-155-216.compute-1.amazonaws.com"
+          REMOTE_USER: "ubuntu"
+          TARGET: "/var/www/petguardian-api"
+          EXCLUDE: "/dist/, /node_modules/, *.env, rebuild_app.sh, watcher.sh"
+  
+  build:
+    name: Build project
+    runs-on: ubuntu-latest
+    needs: deploy
+
+    strategy:
+      matrix:
+        node-version: [16.x, 17.x, 18.x, 20.x]
+
+    steps:
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build project
+        run: npm run build
+
+      - name: Restart to PM2
+        run: pm2 restart pet-guardian_api
+
+        
