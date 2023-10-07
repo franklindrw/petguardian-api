@@ -51,4 +51,5 @@ jobs:
       - name: Deploy to server EC2
         run: |
           ssh -i ${{ secrets.SSH_PRIVATE_KEY }} ubuntu@ec2-52-54-155-216.compute-1.amazonaws.com "npm install && npm run build && pm2 restart petguardian_api"
-      
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
