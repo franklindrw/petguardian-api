@@ -6,14 +6,14 @@ on:
 
 jobs:
   deploy:
-    name: Deploy and Build Project
+    name: Clone project to EC2
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout the files
         uses: actions/checkout@v3
 
-      - name: Copy files with SSH
+      - name: Copy files with SSH and start build
         uses: easingthemes/ssh-deploy@main
         env:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
@@ -23,18 +23,8 @@ jobs:
           REMOTE_USER: "ubuntu"
           TARGET: "/var/www/petguardian-api"
           EXCLUDE: "/dist/, /node_modules/, *.env, rebuild_app.sh, watcher.sh"
-  
-      - name: Change to project directory
-        run: cd /var/www/petguardian-api
-
-      - name: Install dependencies
-        run: npm install
-
-      - name: Build project
-        run: npm run build
-
-      - name: Restart to PM2
-        run: pm2 restart pet-guardian_api
-      
-
-        
+          SCRIPT_AFTER: |
+            cd /var/www/petguardian-api &&
+            npm install &&
+            npm run build &&
+            pm2 restart pet-guardian_api        
