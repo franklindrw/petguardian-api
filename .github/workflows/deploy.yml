@@ -58,7 +58,7 @@ jobs:
         run:
           echo "$PRIVATE_KEY" > private_key.pem && chmod 600 private_key.pem && eval "$(ssh-agent -s)" && ssh-add private_key.pem &&
           ssh -o StrictHostKeyChecking=no -i private_key.pem ${USERNAME}@${HOSTNAME} '
-            export PATH=$PATH:/home/ubuntu/.nvm/versions/node/v20.6.1/bin/npm &&
+            export PATH=$PATH:/home/ubuntu/.nvm/versions/node/v20.6.1/bin &&
             cd /var/www/petguardian-api &&
             npm install &&
             npm run build &&
