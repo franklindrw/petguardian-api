@@ -9,10 +9,6 @@ jobs:
     name: Deploy and Build Project
     runs-on: ubuntu-latest
 
-    strategy:
-      matrix:
-        node-version: [20.x]
-
     steps:
       - name: Checkout the files
         uses: actions/checkout@v3
