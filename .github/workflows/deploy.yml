@@ -6,16 +6,16 @@ on:
 
 jobs:
   deploy:
-    name: Clone project to EC2
+    name: Deploy and Build Project
     runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [20.x]
 
     steps:
       - name: Checkout the files
         uses: actions/checkout@v3
-
-      - name: Set up SSH connection
-        run: |
-          echo "SSH_DEPLOY_KEY=${{ secrets.SSH_PRIVATE_KEY }}" >> $GITHUB_ENV
 
       - name: Copy files with SSH
         uses: easingthemes/ssh-deploy@main
@@ -27,20 +27,7 @@ jobs:
           REMOTE_USER: "ubuntu"
           TARGET: "/var/www/petguardian-api"
           EXCLUDE: "/dist/, /node_modules/, *.env, rebuild_app.sh, watcher.sh"
-
-  build:
-    name: Build project
-    runs-on: ubuntu-latest
-    needs: deploy
-
-    steps:
-      - name: Checkout the files
-        uses: actions/checkout@v3
-
-      - name: Set up SSH connection for build
-        run: |
-          echo "SSH_BUILD_KEY=${{ secrets.SSH_PRIVATE_KEY }}" >> $GITHUB_ENV
-
+  
       - name: Change to project directory
         run: cd /var/www/petguardian-api
 
@@ -52,3 +39,6 @@ jobs:
 
       - name: Restart to PM2
         run: pm2 restart pet-guardian_api
+      
+
+        
