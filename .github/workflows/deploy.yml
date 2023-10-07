@@ -9,9 +9,27 @@ jobs:
     name: Clone project to EC2
     runs-on: ubuntu-latest
 
+    strategy:
+      matrix:
+        node-version: [18.x]
+
     steps:
       - name: Checkout the files
         uses: actions/checkout@v3
+
+      - name: Install Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Gerando build
+        run: npm run build
+
+      - name: Executando os testes
+        run: npm run test
 
       - name: Copy files with SSH
         uses: easingthemes/ssh-deploy@main
@@ -23,30 +41,14 @@ jobs:
           REMOTE_USER: "ubuntu"
           TARGET: "/var/www/petguardian-api"
           EXCLUDE: "/dist/, /node_modules/, *.env, rebuild_app.sh, watcher.sh"
-  
+
   build:
-    name: Build project
+    name: Build in the EC2
     runs-on: ubuntu-latest
     needs: deploy
 
-    strategy:
-      matrix:
-        node-version: [18.x]
-
     steps:
-      - name: Checkout the files
-        uses: actions/checkout@v3
-
-      - run: npm install
-      - run: npm run build
-      - run: pm2 restart pet-guardian_api
+      - name: Deploy to server EC2
+        run: |
+          ssh -i ${{ secrets.SSH_PRIVATE_KEY }} ubuntu@ec2-52-54-155-216.compute-1.amazonaws.com "npm install && npm run build && pm2 restart petguardian_api"
       
-      - name: Deployments to Server
-        uses: burnett01/rsync-deployments@6.0.0
-        with:
-          switches: -avzr --delete
-          path: ./*
-          remote_path: /var/www/petguardian-api/
-          remote_host: ec2-52-54-155-216.compute-1.amazonaws.com
-          remote_user: ubuntu
-          remote_key: ${{ secrets.SSH_PRIVATE_KEY }}
