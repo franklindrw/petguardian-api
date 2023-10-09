@@ -3,6 +3,8 @@ import { CreatePetDto } from './dtos/create-pet.dto';
 import { ValidationError, validate } from 'class-validator';
 import { PetIdProps, PetsRepository } from './pets.repository';
 import { UpdatePetDto } from './dtos/update-pet.dto';
+import { IsCep } from '@/decorators/isCep.decorator';
+import { IsCategory } from '../../decorators/isCategory.decorator';
 
 @Injectable()
 export class PetsService {
@@ -29,6 +31,18 @@ export class PetsService {
     if (!pets) {
       throw new HttpException('Não há pets cadastrados', HttpStatus.NOT_FOUND);
     }
+    return pets;
+  }
+
+  async getPetsByLocation(
+    cep: typeof IsCep,
+    category?: typeof IsCategory,
+  ): Promise<any> {
+    const pets = await this.petsRepository.getPetsByLocation(cep, category);
+    if (!pets || pets.length === 0) {
+      throw new HttpException('Não há pets cadastrados', HttpStatus.NOT_FOUND);
+    }
+
     return pets;
   }
 

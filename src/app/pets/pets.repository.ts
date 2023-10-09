@@ -3,6 +3,8 @@ import { Injectable } from '@nestjs/common';
 import { CreatePetDto } from './dtos/create-pet.dto';
 import { PetDto } from './dtos/pet.dto';
 import { UpdatePetDto } from './dtos/update-pet.dto';
+import { IsCep } from '@decorators/isCep.decorator';
+import { IsCategory } from '@decorators/isCategory.decorator';
 
 interface OwnerProps {
   userId: string;
@@ -78,6 +80,32 @@ export class PetsRepository {
       .where('userId', '==', userID)
       .get();
     const pets = [];
+    petsSnapshot.forEach((pet) => {
+      const petData = pet.data();
+      petData.id = pet.id;
+      pets.push(petData as PetDto);
+    });
+
+    return pets;
+  }
+
+  async getPetsByLocation(
+    cep: typeof IsCep,
+    category?: typeof IsCategory,
+  ): Promise<PetDto[]> {
+    const pets = [];
+
+    // faz a query inicial do firestore
+    const petsRef = this.firestore.collection('pets');
+    let query: admin.firestore.Query = petsRef;
+
+    // se houver categoria, adiciona a categoria na query
+    if (category) {
+      query = query.where('category', '==', category);
+    }
+
+    // executa a query no firestore
+    const petsSnapshot = await query.get();
     petsSnapshot.forEach((pet) => {
       const petData = pet.data();
       petData.id = pet.id;

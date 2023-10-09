@@ -24,6 +24,8 @@ import { PetsService } from './pets.service';
 import { PetDto } from './dtos/pet.dto';
 import { CreatePetDto } from './dtos/create-pet.dto';
 import { UpdatePetDto } from './dtos/update-pet.dto';
+import { IsCategory } from '@/decorators/isCategory.decorator';
+import { IsCep } from '@/decorators/isCep.decorator';
 
 @ApiTags('pets') // adicionando a tag pets para o swagger
 @Controller('pets')
@@ -62,6 +64,30 @@ export class PetsController {
     }
   }
 
+  @Get('/location/:cep')
+  @ApiBearerAuth() // adicionando a autenticação por token no swagger
+  @UseGuards(JwtAuthGuard) // adicionando o validador de token
+  @ApiParam({ name: 'cep', type: 'string' }) // adicionando o tipo do param no swagger
+  @ApiQuery({ name: 'category', required: false }) // adicionando o tipo do query no swagger
+  @ApiResponse({
+    status: 200,
+    description: 'lista de pets',
+    type: [PetDto],
+  })
+  @ApiResponse({ status: 403, description: 'Usuário não autenticado' })
+  @ApiResponse({ status: 404, description: 'Não há usuários cadastrados' })
+  async getPetsByLocation(
+    @Param('cep') cep: typeof IsCep,
+    @Query('category') category?: typeof IsCategory,
+  ): Promise<any> {
+    try {
+      const pets = await this.petsService.getPetsByLocation(cep, category);
+      return pets;
+    } catch (error: any) {
+      throw new HttpException(error.message, HttpStatus.NOT_FOUND);
+    }
+  }
+
   @Post()
   @ApiBearerAuth() // adicionando a autenticação por token no swagger
   @UseGuards(JwtAuthGuard) // adicionando o validador de token
@@ -83,7 +109,7 @@ export class PetsController {
   @Put(':petID')
   @ApiBearerAuth() // adicionando a autenticação por token no swagger
   @UseGuards(JwtAuthGuard) // adicionando o validador de token
-  @ApiParam({ name: 'petID', type: 'string' }) // adicionando o tipo do body no swagger
+  @ApiParam({ name: 'petID', type: 'string' }) // adicionando o tipo do param no swagger
   @ApiBody({ type: UpdatePetDto }) // adicionando o tipo do body no swagger
   @ApiResponse({
     status: 200,

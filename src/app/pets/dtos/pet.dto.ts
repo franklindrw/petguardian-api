@@ -94,6 +94,14 @@ export class PetDto {
   cep: string;
 
   /**
+   * Distância em km do local onde o pet se encontra
+   * @example 5.98
+   */
+  @IsOptional()
+  @IsNumber()
+  distance?: number;
+
+  /**
    * Id do usuário que está cadastrando o pet
    */
   @IsString()
