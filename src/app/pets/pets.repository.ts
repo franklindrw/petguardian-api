@@ -1,10 +1,12 @@
 import * as admin from 'firebase-admin';
+import * as geolib from 'geolib';
 import { Injectable } from '@nestjs/common';
 import { CreatePetDto } from './dtos/create-pet.dto';
 import { PetDto } from './dtos/pet.dto';
 import { UpdatePetDto } from './dtos/update-pet.dto';
 import { IsCep } from '@decorators/isCep.decorator';
 import { IsCategory } from '@decorators/isCategory.decorator';
+import { Location } from '@utils/location';
 
 interface OwnerProps {
   userId: string;
@@ -29,7 +31,7 @@ export interface PetIdProps {
 export class PetsRepository {
   private readonly firestore: admin.firestore.Firestore;
 
-  constructor() {
+  constructor(private readonly location: Location) {
     this.firestore = admin.firestore();
   }
 
@@ -103,6 +105,19 @@ export class PetsRepository {
     if (category) {
       query = query.where('category', '==', category);
     }
+
+    // busca as coordenadas do cep informado
+    const cepData = await this.location.addressCoord(cep.toString());
+    const coordinates = cepData.items[0].position;
+
+    // coordenadas fake para teste
+    const fakeCoord = { lat: -23.44906, lng: -46.43177 };
+
+    // verifica a distancia entre as coordenadas
+    const distance = geolib.getDistance(fakeCoord, coordinates);
+    const distanceInKm = distance / 1000;
+
+    console.log(distanceInKm);
 
     // executa a query no firestore
     const petsSnapshot = await query.get();
