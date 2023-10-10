@@ -131,6 +131,13 @@ export class PetsRepository {
   }
 
   async createPet(createPetDto: CreatePetDto): Promise<CreatePetDto> {
+    // busca as coordenadas do cep informado
+    const cepData = await this.location.addressCoord(createPetDto.cep);
+    const coordinates = cepData.items[0].position;
+
+    // adiciona as coordenadas ao objeto do pet
+    createPetDto.location = coordinates;
+
     const newPetRef = await this.firestore.collection('pets').add(createPetDto);
     const newPet = await newPetRef.get();
     return { ...newPet.data() } as CreatePetDto;
@@ -138,6 +145,15 @@ export class PetsRepository {
 
   async updatePet(petID: string, updatePetDto: UpdatePetDto): Promise<any> {
     const petData = { ...updatePetDto };
+
+    if (updatePetDto.cep) {
+      // busca as coordenadas do cep informado
+      const cepData = await this.location.addressCoord(updatePetDto.cep);
+      const coordinates = cepData.items[0].position;
+
+      // adiciona as coordenadas ao objeto do pet
+      petData.location = coordinates;
+    }
 
     // remove os campos vazios
     Object.keys(petData).forEach(

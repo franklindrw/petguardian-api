@@ -1,4 +1,10 @@
-import { IsOptional, IsString, IsNumber, IsArray } from 'class-validator';
+import {
+  IsOptional,
+  IsString,
+  IsNumber,
+  IsArray,
+  IsObject,
+} from 'class-validator';
 import { IsCep } from '@decorators/isCep.decorator';
 import { IsCategory } from '@decorators/isCategory.decorator';
 import { IsQualities } from '@decorators/isQualities.decorator';
@@ -91,4 +97,12 @@ export class UpdatePetDto {
   @IsString()
   @IsCep({ message: 'CEP must be in the format 00000-000' })
   cep?: string;
+
+  /**
+   * Coordenadas do local onde o pet se encontra
+   * @example { lat: -23.5505, lng: -46.6333 }
+   */
+  @IsOptional()
+  @IsObject()
+  location?: { lat: number; lng: number };
 }

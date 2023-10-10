@@ -1,4 +1,10 @@
-import { IsArray, IsNumber, IsOptional, IsString } from 'class-validator';
+import {
+  IsArray,
+  IsNumber,
+  IsObject,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 import { IsCategory } from '@decorators/isCategory.decorator';
 import { IsQualities } from '@decorators/isQualities.decorator';
 import { IsAnimalSize } from '@decorators/isAnimalSize.decorator';
@@ -85,6 +91,14 @@ export class CreatePetDto {
   @IsString()
   @IsCep({ message: 'CEP must be in the format 00000-000' })
   cep: string;
+
+  /**
+   * Coordenadas do local onde o pet se encontra
+   * @example { lat: -23.5505, lng: -46.6333 }
+   */
+  @IsOptional()
+  @IsObject()
+  location?: { lat: number; lng: number };
 
   /**
    * Id do usuário que está cadastrando o pet
