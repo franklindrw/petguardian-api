@@ -110,24 +110,19 @@ export class PetsRepository {
     const cepData = await this.location.addressCoord(cep.toString());
     const coordinates = cepData.items[0].position;
 
-    // coordenadas fake para teste
-    const fakeCoord = { lat: -23.44906, lng: -46.43177 };
-
-    // verifica a distancia entre as coordenadas
-    const distance = geolib.getDistance(fakeCoord, coordinates);
-    const distanceInKm = distance / 1000;
-
-    console.log(distanceInKm);
-
     // executa a query no firestore
     const petsSnapshot = await query.get();
     petsSnapshot.forEach((pet) => {
       const petData = pet.data();
       petData.id = pet.id;
+      petData.distance =
+        geolib.getDistance(petData.location, coordinates) / 1000;
       pets.push(petData as PetDto);
     });
 
-    return pets;
+    // ordena os pets por distância e retorna o array
+    const orderPets = pets.sort((a, b) => a.distance - b.distance);
+    return orderPets;
   }
 
   async createPet(createPetDto: CreatePetDto): Promise<CreatePetDto> {
