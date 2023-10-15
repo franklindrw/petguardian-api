@@ -64,6 +64,6 @@ jobs:
             npm run build &&
             pm2 stop petguardian-api &&
             pm2 delete petguardian-api &&
-            pm2 start petguardian-api
+            pm2 start ./dist/main.js --name petguardian-api
           '
       
