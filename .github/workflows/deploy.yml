@@ -62,6 +62,8 @@ jobs:
             cd /var/www/petguardian-api &&
             npm install &&
             npm run build &&
-            pm2 restart petguardian-api
+            pm2 stop petguardian-api &&
+            pm2 delete petguardian-api &&
+            pm2 start petguardian-api
           '
       
