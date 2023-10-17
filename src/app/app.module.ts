@@ -6,6 +6,7 @@ import { LoggerMiddleware } from './logger.middleware';
 import * as responseTime from 'response-time';
 import { StorageModule } from './storage/storage.module';
 import { MulterModule } from '@nestjs/platform-express';
+import { CorsMiddleware } from './cors.middleware';
 
 @Module({
   imports: [
@@ -13,12 +14,13 @@ import { MulterModule } from '@nestjs/platform-express';
     UsersModule,
     PetsModule,
     StorageModule,
-    MulterModule.register({ dest: '../temp' }), // armaena os arquivos temporariamente
+    MulterModule.register({ dest: '../temp' }), // armazena os arquivos temporariamente
   ],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer.apply(LoggerMiddleware).forRoutes('*'); // Aplica o LoggerMiddleware globalmente
+    consumer.apply(CorsMiddleware).forRoutes('*'); // Aplica o CorsMiddleware globalmente
     consumer.apply(responseTime()).forRoutes('*'); // Aplica o response-time após o LoggerMiddleware
   }
 }
