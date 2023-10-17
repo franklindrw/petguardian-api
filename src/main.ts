@@ -10,6 +10,13 @@ async function bootstrap() {
   initializeFirebase();
   const app = await NestFactory.create(AppModule);
 
+  // configurando o cors
+  app.enableCors({
+    origin: '*',
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    allowedHeaders: 'Content-Type, Accept, Authorization',
+  });
+
   // adicionando as configurações do swagger
   const config = new DocumentBuilder()
     .setTitle('Pet Guardian API')
